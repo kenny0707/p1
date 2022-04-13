@@ -1,7 +1,7 @@
 #include "mbed.h" //p1
 #include "uLCD_4DGL.h"
 
-using namespace std::chrono;
+//using namespace std::chrono;
 
 Ticker Countdown;
 InterruptIn button(BUTTON1);
@@ -53,7 +53,7 @@ void Change()
     state++;
     if (state % 3 == 1)
     {
-        Countdown.attach(&Clock,1000us);
+        Countdown.attach(&Clock,100ms);
     }
     else if (state % 3 == 2)
     {
@@ -67,7 +67,7 @@ void Change()
 
 int main() {
     t.start(callback(&queue, &EventQueue::dispatch_forever));
-  button.rise(&Change);
+    button.rise(&Change);
   while(1)
 {
     ThisThread::sleep_for(10ms);
