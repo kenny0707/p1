@@ -5,7 +5,8 @@ using namespace std::chrono;
 
 Ticker Countdown;
 InterruptIn button(BUTTON1);
-
+int i = 0;
+int state = 0;
 Thread t;
 
 EventQueue queue;
@@ -15,26 +16,27 @@ EventQueue queue;
 
 uLCD_4DGL uLCD(D1, D0, D2);
 
-void qreset()
-{
-    uLCD.reset();
-    uLCD.printf("0:00:0.");
-}
-
 void qclock()
 {
-    static int i = 0;
     uLCD.locate(0, 1);
     int sec = i / 10;
+    int Sec = sec % 60;
     int minsec = i - sec * 10;
-    int min = sec / 60;
+    int min = i / 600;
     uLCD.printf("%2d", min);
     uLCD.printf(":");
-    uLCD.printf("%2d", sec);
+    uLCD.printf("%2d", Sec);
     uLCD.printf(":");
     uLCD.printf("%2d.", minsec);
     i++;
 }
+
+void qreset()
+{
+    i = 0;
+    qclock();
+}
+
 
 void Clock()
 {
@@ -48,31 +50,27 @@ void reset()
 
 void Change()
 {
-    static int state = 1;
+    state++;
     if (state % 3 == 1)
     {
-        Countdown.attach(&Clock,10ms);
-        state++;
+        Countdown.attach(&Clock,1000us);
     }
     else if (state % 3 == 2)
     {
         Countdown.detach();
-        state++;
     }
     else 
     {
         reset();
-        state++;
     }
 }
 
 int main() {
     t.start(callback(&queue, &EventQueue::dispatch_forever));
-  uLCD.background_color(WHITE);
-  uLCD.color(BLUE);
-  uLCD.text_width(2); // 4X size text
-  uLCD.text_height(2);
   button.rise(&Change);
-  while(1);
+  while(1)
+{
+    ThisThread::sleep_for(10ms);
+}
 }
 
